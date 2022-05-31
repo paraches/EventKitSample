@@ -83,4 +83,23 @@ class EventManager {
         let predicate = eventStore.predicateForEvents(withStart: Calendar.current.date(byAdding: .month, value: -3, to: Date())!, end: Date(), calendars: calendars)
         events = eventStore.events(matching: predicate)
     }
+    
+    func newEvent(title: String) {
+        let event = EKEvent(eventStore: eventStore)
+        event.title = title
+        event.startDate = Date()
+        event.endDate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+        event.calendar = eventStore.defaultCalendarForNewEvents
+        try! eventStore.save(event, span: .thisEvent)
+        
+        initEvents()
+    }
+    
+    func removeEvent(at indexPath: IndexPath) {
+        guard let events = events else { return }
+        let event = events[indexPath.row]
+        try! eventStore.remove(event, span: .thisEvent)
+        
+        initEvents()
+    }
 }
